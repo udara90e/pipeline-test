@@ -1,0 +1,114 @@
+name: Deploy Node.js App to EC2 (Zero-Downtime with PM2)
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  DEPLOY_PATH: /opt/webapp/cse
+  APP_NAME: cse-app
+  NODE_VERSION: 22.17.1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------
+      # Checkout & build
+      # -------------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript project
+        run: npm run build
+
+      - name: Prepare deploy artifact
+        run: |
+          mkdir deploy
+          cp -r dist deploy/
+          cp package.json package-lock.json deploy/
+
+      # # -------------------------------
+      # # Check SSH connectivity
+      # # -------------------------------
+      # - name: Test SSH connection
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.EC2_PRIVATE_KEY }}
+      #     script: |
+      #       echo "SSH connection successful"
+      #       whoami
+
+      # -------------------------------
+      # Create target directory on server
+      # # -------------------------------
+      # - name: Ensure deploy directory exists
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.EC2_PRIVATE_KEY }}
+      #     script: |
+      #       sudo mkdir -p ${{ env.DEPLOY_PATH }}
+      #       sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} ${{ env.DEPLOY_PATH }}
+
+# -------------------------------
+      # Copy build to jumpbox
+      # -------------------------------
+      - name: Upload build to Jumpbox
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.JUMPBOX_HOST }}
+          username: ${{ secrets.JUMPBOX_USER }}
+          key: ${{ secrets.JUMPBOX_KEY }}
+          source: "deploy/*"
+          target: "/tmp/deploy"
+          strip_components: 1
+          overwrite: true
+
+      # -------------------------------
+      # Copy build from jumpbox → private EC2 and deploy
+      # -------------------------------
+      - name: Deploy to private EC2 via Jumpbox
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.JUMPBOX_HOST }}
+          username: ${{ secrets.JUMPBOX_USER }}
+          key: ${{ secrets.JUMPBOX_KEY }}
+          script: |
+            # Copy build to private EC2
+            scp -i /home/${{ secrets.JUMPBOX_USER }}/.ssh/private_ec2_key \
+                -o StrictHostKeyChecking=no -r /tmp/deploy/* \
+                ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }}:${{ env.DEPLOY_PATH }}
+
+            # SSH into private EC2 to install deps + reload PM2
+            # ssh -i /home/${{ secrets.JUMPBOX_USER }}/.ssh/private_ec2_key \
+            #     -o StrictHostKeyChecking=no \
+            #     ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }} "
+                  
+                  ssh ec2-user@172.31.23.127
+                  cd ${{ env.DEPLOY_PATH }}
+                  npm ci --omit=dev
+
+                  # PM2 cluster zero-downtime reload
+                  if ! pm2 list | grep -q '${{ env.APP_NAME }}'; then
+                    pm2 start dist/main.js -i max --name ${{ env.APP_NAME }}
+                  else
+                    pm2 reload ${{ env.APP_NAME }}
+                  fi
+
+                  pm2 save
+                "
