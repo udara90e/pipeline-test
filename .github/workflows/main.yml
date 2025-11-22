@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  DEPLOY_PATH: /opt/webapp/cse
+  DEPLOY_PATH: /opt/webapp/cse/
   APP_NAME: cse-app
   NODE_VERSION: 22.17.1
 
