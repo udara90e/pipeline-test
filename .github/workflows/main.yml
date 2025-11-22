@@ -80,7 +80,7 @@ jobs:
           overwrite: true
 
       # -------------------------------
-      # Copy build from jumpbox → private EC2 and deploy
+      # Copy build from jumpbox → private EC2 and deploywe
       # -------------------------------
       - name: Deploy to private EC2 via Jumpbox
         uses: appleboy/ssh-action@master
@@ -99,7 +99,7 @@ jobs:
             #     -o StrictHostKeyChecking=no \
             #     ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }} "
 
-                  scp /tmp/deploy/*  ec2-user@172.31.23.127:/home/ec2-user
+                  scp -r tmp/deploy/*  ec2-user@172.31.23.127:${{ env.DEPLOY_PATH }}
                   
                   ssh ec2-user@172.31.23.127
                   cd ${{ env.DEPLOY_PATH }}
