@@ -101,7 +101,7 @@ jobs:
 
                   scp -r /tmp/deploy/*  ec2-user@172.31.23.127:${{ env.DEPLOY_PATH }}
                   
-                  ssh ec2-user@172.31.23.127
+                  ssh ec2-user@172.31.23.127 "
                   sudo mkdir /home/ec2-user/test
                   echo $(hostname)
                   cd ${{ env.DEPLOY_PATH }}
@@ -116,4 +116,7 @@ jobs:
                   fi
 
                   pm2 save
-                "
+                  
+                  
+                  "
+                  
