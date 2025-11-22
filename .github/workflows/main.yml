@@ -3,7 +3,7 @@ name: Deploy Node.js App to EC2 (Zero-Downtime with PM2)
 on:
   push:
     branches:
-      - develop
+      - main
 
 env:
   DEPLOY_PATH: /opt/webapp/cse
