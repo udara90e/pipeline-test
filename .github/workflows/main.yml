@@ -110,7 +110,7 @@ jobs:
 
                   # PM2 cluster zero-downtime reload
                   if ! pm2 list | grep -q '${{ env.APP_NAME }}'; then
-                    pm2 start dist/main.js -i max --name ${{ env.APP_NAME }}
+                    pm2 start dist/node.js -i max --name ${{ env.APP_NAME }}
                   else
                     pm2 reload ${{ env.APP_NAME }}
                   fi
