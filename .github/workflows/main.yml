@@ -90,14 +90,16 @@ jobs:
           key: ${{ secrets.JUMPBOX_KEY }}
           script: |
             # Copy build to private EC2
-            scp -i /home/${{ secrets.JUMPBOX_USER }}/.ssh/private_ec2_key \
-                -o StrictHostKeyChecking=no -r /tmp/deploy/* \
-                ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }}:${{ env.DEPLOY_PATH }}
+            # scp -i /home/${{ secrets.JUMPBOX_USER }}/.ssh/private_ec2_key \
+            #     -o StrictHostKeyChecking=no -r /tmp/deploy/* \
+            #     ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }}:${{ env.DEPLOY_PATH }}
 
             # SSH into private EC2 to install deps + reload PM2
             # ssh -i /home/${{ secrets.JUMPBOX_USER }}/.ssh/private_ec2_key \
             #     -o StrictHostKeyChecking=no \
             #     ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }} "
+
+                  scp /tmp/deploy/*  ec2-user@172.31.23.127:/home/ec2-user
                   
                   ssh ec2-user@172.31.23.127
                   cd ${{ env.DEPLOY_PATH }}
