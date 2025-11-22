@@ -102,8 +102,10 @@ jobs:
                   scp -r /tmp/deploy/*  ec2-user@172.31.23.127:${{ env.DEPLOY_PATH }}
                   
                   ssh ec2-user@172.31.23.127
+                  echo $(hostname)
                   cd ${{ env.DEPLOY_PATH }}
                   npm ci --omit=dev
+
 
                   # PM2 cluster zero-downtime reload
                   if ! pm2 list | grep -q '${{ env.APP_NAME }}'; then
