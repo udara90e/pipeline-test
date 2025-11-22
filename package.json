@@ -1,22 +1,15 @@
 {
   "name": "pipeline-test",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple Express app to test pipeline",
+  "main": "app.js",
   "scripts": {
+    "build": "echo 'Building app...' && mkdir -p dist && cp app.js package.json dist/",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/udara90e/pipeline-test.git"
-  },
-  "keywords": [],
-  "author": "",
+  "author": "Udara",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/udara90e/pipeline-test/issues"
-  },
-  "homepage": "https://github.com/udara90e/pipeline-test#readme",
   "dependencies": {
     "express": "^5.1.0"
   }
