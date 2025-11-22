@@ -2,9 +2,9 @@
   "name": "pipeline-test",
   "version": "1.0.0",
   "description": "Simple Express app to test pipeline",
-  "main": "app.js",
+  "main": "node.js",
   "scripts": {
-    "build": "echo 'Building app...' && mkdir -p dist && cp app.js package.json dist/",
+    "build": "echo 'Building app...' && mkdir -p dist && cp node.js package.json dist/",
     "start": "node node.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
