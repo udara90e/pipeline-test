@@ -99,7 +99,7 @@ jobs:
             #     -o StrictHostKeyChecking=no \
             #     ${{ secrets.PRIVATE_USER }}@${{ secrets.PRIVATE_HOST }} "
 
-                  scp -r tmp/deploy/*  ec2-user@172.31.23.127:${{ env.DEPLOY_PATH }}
+                  scp -r /tmp/deploy/*  ec2-user@172.31.23.127:${{ env.DEPLOY_PATH }}
                   
                   ssh ec2-user@172.31.23.127
                   cd ${{ env.DEPLOY_PATH }}
